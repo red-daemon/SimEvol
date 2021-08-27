@@ -8,7 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: soltar al digerir, absorber, mover, soltar, texto (t)
+# ToDo: absorber, mover, soltar, texto (t)
 
 
 class Sell(pygame.sprite.Sprite):
@@ -72,7 +72,7 @@ class Sell(pygame.sprite.Sprite):
         self.nuts -= 1/24.0     # Cada dia pierde 1 NUTS de nutrientes
         self.ners += 1/24.0     # Cada dia gana 1 NERS de energia
         self._absorb_chon(chons)    # Si hay un Chon cerca, absórbelo
-        self._convert_chon()    # Convierte un Chon en nutrientes
+        self._convert_chon(chons)    # Convierte un Chon en nutrientes
         self._reproduce(sells, texts, screen)   # Si tienen suficientes nutrientes y energía, crea una nueva Selula en su vecindad
 
         self._set_theta()   # Modifica la orientación
@@ -160,18 +160,19 @@ class Sell(pygame.sprite.Sprite):
                 self.nchons += 1    # Agrega 1 al contador de Chons que tiene adentro
                 self.total_chons += 1   # Agrega 1 al contador de Chons absorbidos totales
 
-                dlt = pick_direction()    # Obten una posición aleatoria en la vecindad
-                pos = [self.rect.x+dlt[0], self.rect.y+dlt[1]]
-                s = Chon(pos=pos)   # Crea un nuevo Chon en la posición obtenida 
-                chons.add(s)
-    
-    def _convert_chon(self):
-        """Convierte un Chon en nutrientes si tiene Chons para digerir y suficiente enrgía para hacerlo"""
+    def _convert_chon(self, chons):
+        """Convierte un Chon en nutrientes si tiene Chons para digerir y suficiente enrgía para hacerlo.
+        Al digerir un Chon, suelta uno nuevo que no puede ser comido inmediatamente"""
         # Checa que haya al menos un Chon sin digerir y suficiente energía para hacerlo
         if self.nuts <= 0 and self.nchons > 0 and self.ners >= COST_DIGEST:
             self.ners -= COST_DIGEST    # Utiliza la energía para digerir
             self.nchons -= 1    # Elimina el Chon a digerir
             self.nuts += 1  # Aumenta el contador de nutrientes
+            
+            dlt = pick_direction()    # Obten una posición aleatoria en la vecindad
+            pos = [self.rect.x+dlt[0], self.rect.y+dlt[1]]
+            s = Chon(pos=pos)   # Crea un nuevo Chon en la posición obtenida 
+            chons.add(s)
 
     def _reproduce(self, sells, texts, screen):
         """Para reproducirse debe tener N Chons, y sepárala en dos Selulas con la mitad cada una, 
