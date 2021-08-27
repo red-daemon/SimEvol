@@ -19,7 +19,8 @@ class App:
 
         
     def on_init(self):
-        """"""
+        """Cuando se inicializa el la simulación, iniciliza los componentes, carga el fondo, 
+        y crea los Sprites"""
         pygame.init()   # inicializa el simulador interno
         self.font = pygame.font.SysFont('mono', 8)
         #self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
