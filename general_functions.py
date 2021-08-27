@@ -19,6 +19,23 @@ COST_DIGEST = 0.6
 REPRODUCTION_ENERGY_COST = 1
 CHONS_DECOMPSED = 0
 
+def modify_color(original_color):
+    """modifica ligeramente un color (r,g,b)"""
+    r = modify_channel(original_color[0])
+    g = modify_channel(original_color[1])
+    b = modify_channel(original_color[2])
+
+    return (r,g,b)
+
+def modify_channel(channel):
+    """modifica ligeramente un canal de color"""
+    channel += random.randint(-10,10)
+    if channel > 255:
+        channel = 255
+    if channel < 0:
+        channel = 0
+    return channel
+
 def sprite_collisions(sprites, pos, id = -1):
     """Regresa True si exite otro Sprite que esté en la locación 'pos'"""
     collide = False
