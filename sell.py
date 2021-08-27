@@ -8,7 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: color, descomposicion, absorber, mover, soltar, texto (t)
+# ToDo: soltar al digerir, absorber, mover, soltar, texto (t)
 
 
 class Sell(pygame.sprite.Sprite):
@@ -82,11 +82,12 @@ class Sell(pygame.sprite.Sprite):
         
 
     def _death(self, chons):
-        """Determina si debe morir y, en su caso, elimina la Selula"""
+        """Determina si debe morir y, en su caso, elimina la Selula. 
+        Cuando muere, has que suelte el mismo numero de chons que tiene adentro al morir"""
         # Al acabarse los nutrientes, muere
         if self.nuts < 0:
-            # Al morir se dispersa en unidades de nutrientes predefinidos
-            for _ in range(CHONS_DECOMPSED):
+            # Al morir suelta los Chons que contiene adentro
+            for _ in range(self.nchons):
                 s = Chon([self.rect.x, self.rect.y])
                 chons.add(s)
             # Se elimina la Selula y su sprite de texto
