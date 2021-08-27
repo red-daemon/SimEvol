@@ -8,7 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: reproduccion, color, absorber, mover, soltar
+# ToDo: color, absorber, mover, soltar
 
 
 class Sell(pygame.sprite.Sprite):
@@ -167,45 +167,19 @@ class Sell(pygame.sprite.Sprite):
             self.nuts += 1  # Aumenta el contador de nutrientes
 
     def _reproduce(self, sells, texts, screen):
-        """Si tienen suficientes nutrientes y energía, crea una nueva Selula en su vecindad.
-        
-        Todo: Para reproducirse debe tener N Chons, y se separa en dos con la mitad cada uno, 
-        que surgen en el mismo lugar, pero con orientaciones opuestas
+        """Para reproducirse debe tener N Chons, y sepárala en dos Selulas con la mitad cada una, 
+        que surjan en el mismo lugar, pero con orientaciones opuestas
         """
         # Checa que tenga suficientes Chons y energía para la reproducción
         if self.nchons >= CHONS_FOR_REPRODUCTION and self.ners >= REPRODUCTION_ENERGY_COST:
             self.ners -= REPRODUCTION_ENERGY_COST  # Usa la energía
             self.nchons -= CHONS_FOR_REPRODUCTION // 2    # Usa los chons
-            ##self.nuts -= 1  # Usa los nutrientes
 
             # Crea una nueva Selula en la misma locación, pero con la orientación opuesta
             new_sell(screen, sells, texts, [self.rect.x, self.rect.y], theta=self.theta+ math.pi/2)
             
             # Asigna una orientación perpendicualar a la actual
             self._set_theta(self.theta - math.pi/2)
-
-            """
-            # Escoge una locación en la vecindad
-            dlt = pick_direction()  # Selecciona una posición aleatoria en la vecindad de una Selula
-            pos = [self.rect.x+dlt[0], self.rect.y+dlt[1]]
-            pos = check_boundaries(pos) # Asegura que la nueva locación esté dentro de la pantalla
-            opos = pos
-            # Itera hasta encontrar una locación donde no hayan otros Sprites
-            collide = sprite_collisions(sells, pos)
-            # Si hay otro Sprite en la locación escogida, intentarlo un paso más lejos en la misma dirección
-            while collide:
-                pos = [pos[0] + dlt[0], pos[1] + dlt[1]]
-                pos = check_boundaries(pos)
-                
-                # En caso de que toda la linea esté llena, deja de intentarlo
-                if pos == opos: 
-                    break
-                collide = sprite_collisions(sells, pos)
-
-            # Si encuentra una locación libre, crea una nueva Selula ahí
-            if not collide:
-                new_sell(screen, sells, texts, pos)"""
-
 
 def new_sell(screen, sell_sprites, text_sprites, pos=None, theta = None):
     """Crea una nueva Selula, la grega a la lista de Sprites e incrementa el contador"""
