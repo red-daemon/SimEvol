@@ -8,7 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: absorber, mover, soltar, texto (t)
+# ToDo: mover, soltar, texto (t)
 
 
 class Sell(pygame.sprite.Sprite):
@@ -149,13 +149,20 @@ class Sell(pygame.sprite.Sprite):
             self.theta += 2 * math.pi
 
     def _absorb_chon(self, chons):
-        """Si un Chon se acerca, absorbelo"""
+        """Si un Chon se acerca, absorbelo.
+        La decisión de absorber un Chon o no, es independiente de la acción"""
+        # Busca si hay un Chon en su vecindad
+        chon2absorb = sprite_neighbors(chons.sprites(), self.rect)
         # Checa que los Chons que ha absorbido sean menos que el limite
-        if self.nchons < MAX_CHONS:
-            # Busca si hay un Chon en su vecindad
-            chon2absorb = sprite_neighbors(chons.sprites(), self.rect)
+        if chon2absorb:
+            self._absorb(chon2absorb)   # Agrega 1 al contador de Chons absorbidos totales
+
+    def _absorb(self, chon2absorb):
+        """Verifica las condiciones necesarias para poder absorber un Chon, y lo mata al hacerlo"""
+        # Checa que los Chons que ha absorbido sean menos que el limite
+        # Un Chon solo puede absorberse después de los primeros 10 segundos
+        if self.nchons < MAX_CHONS and chon2absorb.timer == 10: 
             # Ejecuta si lo encuentra y ademas está a punto de moverse
-            if chon2absorb and chon2absorb.timer == 10: # Un Chon solo puede absorberse después de los primeros 10 segundos
                 chon2absorb.kill()  # Mata al Chon
                 self.nchons += 1    # Agrega 1 al contador de Chons que tiene adentro
                 self.total_chons += 1   # Agrega 1 al contador de Chons absorbidos totales
