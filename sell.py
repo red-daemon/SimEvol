@@ -8,7 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: soltar, texto (t), visión
+# ToDo: texto (t), visión
 
 
 class Sell(pygame.sprite.Sprite):
@@ -151,6 +151,7 @@ class Sell(pygame.sprite.Sprite):
         return (random.randrange(-rango, rango) * math.pi) / 180  
 
     def _adjust_theta(self):
+        """Checa que el ángulo de la orientación se mantenga en rango de 0 a 360 grados"""
         if self.theta > 2 * math.pi:
             self.theta -= 2 * math.pi
         if self.theta < 0:
@@ -184,6 +185,11 @@ class Sell(pygame.sprite.Sprite):
             self.nchons -= 1    # Elimina el Chon a digerir
             self.nuts += 1  # Aumenta el contador de nutrientes
             
+            self._release(chons)
+
+    def _release(self, chons):
+        """Suelta Chons que tenga adentro, bajando el contador y creando uno nuevo"""
+        if self.nchons > 0:
             dlt = pick_direction()    # Obten una posición aleatoria en la vecindad
             pos = [self.rect.x+dlt[0], self.rect.y+dlt[1]]
             s = Chon(pos=pos)   # Crea un nuevo Chon en la posición obtenida 
@@ -208,8 +214,6 @@ class Sell(pygame.sprite.Sprite):
             
             # Asigna una orientación perpendicualar a la actual
             self._change_vector(self.theta - math.pi/2)
-
-    
 
 def new_sell(screen, sell_sprites, text_sprites, pos=None, theta = None, color=None):
     """Crea una nueva Selula, la grega a la lista de Sprites e incrementa el contador"""
