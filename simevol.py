@@ -60,7 +60,7 @@ class App:
             self._running = False 
         # Si se aprieta Enter, crea una nueva Selula    
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-            kill_n_chons(self.chon_sprites, 3)
+            kill_n_chons(self.chon_sprites, INITIAL_CHONS)
             new_sell(self._display_surf, self.sell_sprites, 
             self.text_sprites, None)
         
