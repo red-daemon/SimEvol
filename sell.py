@@ -181,11 +181,12 @@ class Sell(pygame.sprite.Sprite):
         Al digerir un Chon, suelta uno nuevo que no puede ser comido inmediatamente"""
         # Checa que haya al menos un Chon sin digerir y suficiente energía para hacerlo
         if self.nuts <= 0 and self.nchons > 0 and self.ners >= COST_DIGEST:
+            self._release(chons) # Suelta el Chon que va a consumir
+            
             self.ners -= COST_DIGEST    # Utiliza la energía para digerir
             self.nchons -= 1    # Elimina el Chon a digerir
             self.nuts += 1  # Aumenta el contador de nutrientes
             
-            self._release(chons)
 
     def _release(self, chons):
         """Suelta Chons que tenga adentro, bajando el contador y creando uno nuevo"""
