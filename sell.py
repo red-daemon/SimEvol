@@ -12,7 +12,7 @@ NSELLS = 0
 
 
 class Sell(pygame.sprite.Sprite):
-    def __init__(self, screen, text_sprite, id, pos=None):
+    def __init__(self, screen, text_sprite, id, pos=None, theta=None):
         """Inicializa una Selula.
         
         Recibe el Sprite de texto, el identificador, la posicion inicial, 
@@ -43,7 +43,13 @@ class Sell(pygame.sprite.Sprite):
         # Guarda las coordenadas del la imagen
         self.real_pose = [self.rect.x, self.rect.y]
         # Genera la orientacion de la Selula de forma aleatoria
-        self.theta = (random.randrange(0, 360) * math.pi) / 180
+        if not theta:
+            self.theta = (random.randrange(0, 360) * math.pi) / 180
+        else:
+            self.theta = theta
+            self._adjust_theta()
+
+        self.speed = 0.5
 
         self.ners = INITIAL_NERS     # Unidades de energia iniciales
         self.nuts = INITIAL_NUTS     # Nutrientes iniciales
@@ -61,6 +67,7 @@ class Sell(pygame.sprite.Sprite):
         self._convert_chon()    # Convierte un Chon en nutrientes
         self._reproduce(sells, texts, screen)   # Si tienen suficientes nutrientes y energía, crea una nueva Selula en su vecindad
 
+        self._set_theta()   # Modifica la orientación
         self._move(sells)   # Mueve la Selula a una nueva posición
         self._update_data() # Obtiene los nuevos datos para mostrarlos en pantalla
         self._death(chons)  # Determina si debe morir y, en su caso, elimina la Selula
@@ -78,7 +85,7 @@ class Sell(pygame.sprite.Sprite):
             self.text_sprite.kill()
             self.kill()
 
-    def _update_data(self, coord = True):
+    def _update_data(self, coord = False):
         """Obtiene los nuevos datos para mostrarlos en pantalla"""
         # Checa si se desean mostrar las coordenadas o no
         if coord:
@@ -102,11 +109,9 @@ class Sell(pygame.sprite.Sprite):
         """
         Mueve la Selula a una nueva posición
         """
-        # Calcula direccion aleatoria de movimiento 
-        step = (random.randrange(-15, 15) * math.pi) / 180  # Delta del ángulo en radianes
-        self.theta += step
-        xstep = math.cos(self.theta)/1
-        ystep = math.sin(self.theta)/1
+        # Calcula la nueva posición enfunción de la orientación y la velocidad
+        xstep = math.cos(self.theta) * self.speed
+        ystep = math.sin(self.theta) * self.speed
 
         # Calcula la nueva posicion de la Selula
         next_pos = [self.real_pose[0] + xstep, self.real_pose[1] + ystep]
@@ -121,6 +126,20 @@ class Sell(pygame.sprite.Sprite):
             self.rect.x = pos[0]
             self.rect.y = pos[1]
             self.real_pose = next_pos   # Guarda la posición real de la Selula
+
+    def _set_theta(self, delta = None):
+        """Modifica la orientación"""
+        if not delta:
+            delta = (random.randrange(-15, 15) * math.pi) / 180  # Delta del ángulo en radianes
+        self.theta += delta
+        
+        self._adjust_theta()
+
+    def _adjust_theta(self):
+        if self.theta > 2 * math.pi:
+            self.theta -= 2 * math.pi
+        if self.theta < 0:
+            self.theta += 2 * math.pi
 
     def _absorb_chon(self, chons):
         """Si un Chon se acerca, absorbelo"""
@@ -150,19 +169,22 @@ class Sell(pygame.sprite.Sprite):
     def _reproduce(self, sells, texts, screen):
         """Si tienen suficientes nutrientes y energía, crea una nueva Selula en su vecindad.
         
-        Todo: Para reproducirse debe tener 10? Chons, y se separa en dos con 5 cada uno, 
+        Todo: Para reproducirse debe tener N Chons, y se separa en dos con la mitad cada uno, 
         que surgen en el mismo lugar, pero con orientaciones opuestas
         """
         # Checa que tenga suficientes Chons y energía para la reproducción
-        if self.nchons > CHONS_FOR_REPRODUCTION and self.ners >= REPRODUCTION_ENERGY_COST:
+        if self.nchons >= CHONS_FOR_REPRODUCTION and self.ners >= REPRODUCTION_ENERGY_COST:
             self.ners -= REPRODUCTION_ENERGY_COST  # Usa la energía
             self.nchons -= CHONS_FOR_REPRODUCTION // 2    # Usa los chons
             ##self.nuts -= 1  # Usa los nutrientes
 
-            # Asigna una orientación perpendicualar a la actual
-            self.theta = 0
             # Crea una nueva Selula en la misma locación, pero con la orientación opuesta
+            new_sell(screen, sells, texts, [self.rect.x, self.rect.y], theta=self.theta+ math.pi/2)
+            
+            # Asigna una orientación perpendicualar a la actual
+            self._set_theta(self.theta - math.pi/2)
 
+            """
             # Escoge una locación en la vecindad
             dlt = pick_direction()  # Selecciona una posición aleatoria en la vecindad de una Selula
             pos = [self.rect.x+dlt[0], self.rect.y+dlt[1]]
@@ -182,10 +204,10 @@ class Sell(pygame.sprite.Sprite):
 
             # Si encuentra una locación libre, crea una nueva Selula ahí
             if not collide:
-                new_sell(screen, sells, texts, pos)
+                new_sell(screen, sells, texts, pos)"""
 
 
-def new_sell(screen, sell_sprites, text_sprites, pos=None):
+def new_sell(screen, sell_sprites, text_sprites, pos=None, theta = None):
     """Crea una nueva Selula, la grega a la lista de Sprites e incrementa el contador"""
     global NSELLS   # Usa el contador global de Selulas
     
@@ -195,6 +217,6 @@ def new_sell(screen, sell_sprites, text_sprites, pos=None):
         pos_rel=(RIGHT, BOTTOM))
     text_sprites.add(text)
     
-    s = Sell(screen, text, NSELLS, pos)  # Crea una nueva Selula
+    s = Sell(screen, text, NSELLS, pos, theta)  # Crea una nueva Selula
     sell_sprites.add(s) # Agrega la Selula a la lista de Sprites
     NSELLS += 1 # Incrementa el contador de Selulas
