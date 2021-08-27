@@ -8,15 +8,16 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: color, absorber, mover, soltar
+# ToDo: color, descomposicion, absorber, mover, soltar, texto (t)
 
 
 class Sell(pygame.sprite.Sprite):
-    def __init__(self, screen, text_sprite, id, pos=None, theta=None):
+    def __init__(self, screen, text_sprite, id, pos=None, theta=None, color=None):
         """Inicializa una Selula.
         
         Recibe el Sprite de texto, el identificador, la posicion inicial, 
-        y las dimensiones de la pantalla para no pasar los bordes."""
+        y las dimensiones de la pantalla para no pasar los bordes.
+        Al crearse, asígnale un color aleatorio para que lo herede a sus clones"""
         pygame.sprite.Sprite.__init__(self) # Inicializa el Sprite
         self.id = id    # Asigna identificador
         
@@ -26,7 +27,6 @@ class Sell(pygame.sprite.Sprite):
             nx = random.randrange(0, WIDTH, 10)
             ny = random.randrange(0, HEIGHT, 10)
         else: 
-            ##self.rect = self.rect.move(pos[0], pos[1])
             nx = pos[0]
             ny = pos[1]
 
@@ -35,8 +35,16 @@ class Sell(pygame.sprite.Sprite):
         self.image.fill((0,0,0))
         self.image.set_colorkey((0,0,0))
         
-        pygame.draw.circle(self.image, (0, 0, 255), (radius, radius), radius)
-        ##self.image = pygame.image.load('sell.bmp').convert()    # Carga la imagen de la Selula
+        # Asigna color aleatorio como atributo de la Selula
+        if not color:
+            r = random.randint(0,255)
+            g = random.randint(0,255)
+            b = random.randint(0,255)
+            self.color = (r,g,b)
+        else:
+            self.color = color
+
+        pygame.draw.circle(self.image, self.color, (radius, radius), radius)
         # Crea y asigna el rectángulo contenedor de la imagen
         self.rect = self.image.get_rect(center=(nx,ny))
 
@@ -96,11 +104,9 @@ class Sell(pygame.sprite.Sprite):
                 int(self.real_pose[0]), int(self.real_pose[1]),
                 (self.theta*180)/math.pi) 
         else:
-            self.data = "{:d} {:d} {:0.2f} {:0.2f} {:0.1f}".format(
+            self.data = "{:d} {:0.2f} {:0.2f}".format(
                 self.nchons, 
-                self.total_chons, 
-                self.nuts, self.ners,
-                (self.theta*180)/math.pi) 
+                self.nuts, self.ners) 
         
         # Prepara el render del texto en la locación de la Selula
         self.text_sprite.print_text(self.data, [int(self.real_pose[0]), int(self.real_pose[1])])
@@ -175,13 +181,19 @@ class Sell(pygame.sprite.Sprite):
             self.ners -= REPRODUCTION_ENERGY_COST  # Usa la energía
             self.nchons -= CHONS_FOR_REPRODUCTION // 2    # Usa los chons
 
+            # Modifica un poco el color para la nueva Sélula
+            rgb = modify_color(self.color)
+
             # Crea una nueva Selula en la misma locación, pero con la orientación opuesta
-            new_sell(screen, sells, texts, [self.rect.x, self.rect.y], theta=self.theta+ math.pi/2)
+            new_sell(screen, sells, texts, [self.rect.x, self.rect.y], 
+                     theta=self.theta+ math.pi/2, color=rgb)
             
             # Asigna una orientación perpendicualar a la actual
             self._set_theta(self.theta - math.pi/2)
 
-def new_sell(screen, sell_sprites, text_sprites, pos=None, theta = None):
+    
+
+def new_sell(screen, sell_sprites, text_sprites, pos=None, theta = None, color=None):
     """Crea una nueva Selula, la grega a la lista de Sprites e incrementa el contador"""
     global NSELLS   # Usa el contador global de Selulas
     
@@ -191,6 +203,6 @@ def new_sell(screen, sell_sprites, text_sprites, pos=None, theta = None):
         pos_rel=(RIGHT, BOTTOM))
     text_sprites.add(text)
     
-    s = Sell(screen, text, NSELLS, pos, theta)  # Crea una nueva Selula
+    s = Sell(screen, text, NSELLS, pos, theta, color)  # Crea una nueva Selula
     sell_sprites.add(s) # Agrega la Selula a la lista de Sprites
     NSELLS += 1 # Incrementa el contador de Selulas
