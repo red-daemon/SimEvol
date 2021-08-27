@@ -6,19 +6,24 @@ WIDTH = 800
 HEIGHT = 600
 
 START_SELLS = 1
-START_CHONS = 0
+START_CHONS = 200
 
-MAX_CHONS = 4
-MAX_NUTS = 4
+CHONS_FOR_REPRODUCTION = 4
+INITIAL_NERS = 1
+INITIAL_NUTS = 0
+INITIAL_CHONS = CHONS_FOR_REPRODUCTION // 2
+
+MAX_CHONS = 20
+#MAX_NUTS = 4
 COST_DIGEST = 0.6
 REPRODUCTION_ENERGY_COST = 1
-CHONS_DECOMPSED = 3
+CHONS_DECOMPSED = 0
 
 def sprite_collisions(sprites, pos, id = -1):
     """Regresa True si exite otro Sprite que esté en la locación 'pos'"""
     collide = False
     for i, s in enumerate(sprites):
-        if id == i: 
+        if id == s.id: 
             continue
         if s.rect.x == pos[0] and s.rect.y == pos[1]:
             collide = True
@@ -51,7 +56,7 @@ def check_boundaries(next_pos):
     return next_pos
 
 def pick_direction():
-    """Selecciona una dirección aleatoria en la vecindad de una Selula"""
+    """Selecciona una posición aleatoria en la vecindad de una Selula"""
     d = random.randint(0,7)
     # d=0
     if d == 0:

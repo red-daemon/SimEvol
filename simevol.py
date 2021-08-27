@@ -16,6 +16,7 @@ class App:
         self.size = self.width, self.height = WIDTH, HEIGHT # Asigna el tamanio de la pantalla
         self.clock = pygame.time.Clock()
         pygame.display.set_caption('SimEvol')   # Titulo de la ventana
+
         
     def on_init(self):
         """"""
@@ -25,9 +26,11 @@ class App:
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE)
         self._running = True    # Si todo sale bien, prende la bandera de que esta corriendo
         
+
         # Carga la imagen de fondo
         self.background = pygame.image.load('background.bmp').convert() 
         self._display_surf.blit(self.background, (0,0))
+
         pygame.display.flip()
 
         # Inicializa las listas de Sprites
@@ -38,7 +41,7 @@ class App:
         # Crea las Selulas
         for _ in range(START_SELLS):
             new_sell(self._display_surf, self.sell_sprites, self.text_sprites, 
-            None, self.height, self.width)
+            None)
 
         # Crea los Chons
         for _ in range(START_CHONS):
@@ -59,7 +62,7 @@ class App:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
             kill_n_chons(self.chon_sprites, 3)
             new_sell(self._display_surf, self.sell_sprites, 
-            self.text_sprites, None, self.height, self.width)
+            self.text_sprites, None)
         
     def on_loop(self):
         pass
