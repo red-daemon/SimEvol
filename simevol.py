@@ -16,6 +16,7 @@ class App:
         self.size = self.width, self.height = WIDTH, HEIGHT # Asigna el tamanio de la pantalla
         self.clock = pygame.time.Clock()
         pygame.display.set_caption('SimEvol')   # Titulo de la ventana
+        self.show_text = False
 
         
     def on_init(self):
@@ -64,7 +65,12 @@ class App:
             kill_n_chons(self.chon_sprites, INITIAL_CHONS)
             new_sell(self._display_surf, self.sell_sprites, 
             self.text_sprites, None)
-        
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+            if self.show_text:
+                self.show_text = False 
+            else:
+                self.show_text = True
+
     def on_loop(self):
         pass
         
@@ -85,7 +91,7 @@ class App:
  
         # Ejecuta seccion mientras el simulador corra sin interrupciones       
         while( self._running ):
-            self.clock.tick(6)  # La velocidad del simulador. 
+            self.clock.tick(8)  # La velocidad del simulador. 
             # Revisa si hay eventos pendientes y ejecutalos
             for event in pygame.event.get():
                 self.on_event(event)
@@ -98,12 +104,14 @@ class App:
             # Llama los metodos de actualizacion de los Sprites
             self.sell_sprites.update(self.sell_sprites, self.chon_sprites, self.text_sprites, self._display_surf)
             self.chon_sprites.update(self.sell_sprites)
-            self.chons_txt.print_text(str(len(self.chon_sprites.sprites())) + " " + str(len(self.sell_sprites.sprites())))
+            if self.show_text:
+                self.chons_txt.print_text(str(len(self.chon_sprites.sprites())) + " " + str(len(self.sell_sprites.sprites())))
             
             # Redibuja los Sprites
             dirty = self.sell_sprites.draw(self._display_surf)
             dirty += self.chon_sprites.draw(self._display_surf)
-            dirty += self.text_sprites.draw(self._display_surf)
+            if self.show_text:
+                dirty += self.text_sprites.draw(self._display_surf)
 
             pygame.display.flip()
             # Metodos necesarios pero vacios

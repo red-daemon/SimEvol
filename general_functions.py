@@ -21,7 +21,7 @@ REPRODUCTION_ENERGY_COST = 0.5
 REPRODUCTION_NUTS_COST = 0.5
 MOVE_ENERGY_COST = 0.5
 MOVE_NUTS_COST = 0.5
-CHONS_DECOMPSED = 0
+#CHONS_DECOMPSED = 0
 
 def modify_color(original_color):
     """modifica ligeramente un color (r,g,b)"""

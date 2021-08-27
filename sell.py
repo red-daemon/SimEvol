@@ -8,8 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: texto (t), visión
-
+# ToDo: visión, tamanio
 
 class Sell(pygame.sprite.Sprite):
     def __init__(self, screen, text_sprite, id, pos=None, theta=None, color=None):
@@ -20,7 +19,7 @@ class Sell(pygame.sprite.Sprite):
         Al crearse, asígnale un color aleatorio para que lo herede a sus clones"""
         pygame.sprite.Sprite.__init__(self) # Inicializa el Sprite
         self.id = id    # Asigna identificador
-        
+
         # Si no se le asigna una posición, asigna una aleatoria
         if not pos:
             ##self.rect = self.rect.move(random.randrange(0, WIDTH, 10), random.randrange(0, HEIGHT, 10))
@@ -108,7 +107,7 @@ class Sell(pygame.sprite.Sprite):
             self.data = "{:d} {:0.2f} {:0.2f}".format(
                 self.nchons, 
                 self.nuts, self.ners) 
-        
+    
         # Prepara el render del texto en la locación de la Selula
         self.text_sprite.print_text(self.data, [int(self.real_pose[0]), int(self.real_pose[1])])
 
