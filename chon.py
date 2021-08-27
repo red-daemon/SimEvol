@@ -24,7 +24,7 @@ class Chon(pygame.sprite.Sprite):
     def update(self, sells):
         """Actualiza al Chon en su cronómetro interno y su posición"""
         # Aumenta el contador de tiempo de gracia para no ser absorbido inmediatamente
-        if self.timer < 10:
+        if self.timer < MERCY_TIME:
             self.timer += 1
         
         self.move(sells)    # Mueve el Chon

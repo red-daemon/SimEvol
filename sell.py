@@ -8,7 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: mover, soltar, texto (t)
+# ToDo: soltar, texto (t), visión
 
 
 class Sell(pygame.sprite.Sprite):
@@ -57,7 +57,7 @@ class Sell(pygame.sprite.Sprite):
             self.theta = theta
             self._adjust_theta()
 
-        self.speed = 0.5
+        self.speed = 1
 
         self.ners = INITIAL_NERS     # Unidades de energia iniciales
         self.nuts = INITIAL_NUTS     # Nutrientes iniciales
@@ -75,7 +75,7 @@ class Sell(pygame.sprite.Sprite):
         self._convert_chon(chons)    # Convierte un Chon en nutrientes
         self._reproduce(sells, texts, screen)   # Si tienen suficientes nutrientes y energía, crea una nueva Selula en su vecindad
 
-        self._set_theta()   # Modifica la orientación
+        self._change_vector(self._delta_theta())   # Modifica la orientación
         self._move(sells)   # Mueve la Selula a una nueva posición
         self._update_data() # Obtiene los nuevos datos para mostrarlos en pantalla
         self._death(chons)  # Determina si debe morir y, en su caso, elimina la Selula
@@ -114,11 +114,16 @@ class Sell(pygame.sprite.Sprite):
 
     def _move(self, sells):
         """
-        Mueve la Selula a una nueva posición
+        Mueve la Selula a una nueva posición. Moverse cuesta energía y nutrientes
+
         """
         # Calcula la nueva posición enfunción de la orientación y la velocidad
         xstep = math.cos(self.theta) * self.speed
         ystep = math.sin(self.theta) * self.speed
+
+        # La energía y los nutrientes se gastan proporcionalmente a la velocidad. 
+        self.ners -= (MOVE_ENERGY_COST * self.speed) - MOVE_ENERGY_COST
+        self.nuts -= (MOVE_NUTS_COST * self.speed) - MOVE_NUTS_COST
 
         # Calcula la nueva posicion de la Selula
         next_pos = [self.real_pose[0] + xstep, self.real_pose[1] + ystep]
@@ -134,13 +139,16 @@ class Sell(pygame.sprite.Sprite):
             self.rect.y = pos[1]
             self.real_pose = next_pos   # Guarda la posición real de la Selula
 
-    def _set_theta(self, delta = None):
-        """Modifica la orientación"""
-        if not delta:
-            delta = (random.randrange(-15, 15) * math.pi) / 180  # Delta del ángulo en radianes
-        self.theta += delta
-        
-        self._adjust_theta()
+    def _change_vector(self, d_theta=None, d_speed=None):
+        """Modifica el vector de movimiento dados los cmabios en orientación y velocidad"""
+        if d_theta:
+            self.theta += d_theta 
+        if d_speed:
+            self.speed += d_speed
+
+    def _delta_theta(self, rango=15):
+        """Calcula el cambio del ángulo en radianes dentro del rango dado (en grados)"""
+        return (random.randrange(-rango, rango) * math.pi) / 180  
 
     def _adjust_theta(self):
         if self.theta > 2 * math.pi:
@@ -188,6 +196,7 @@ class Sell(pygame.sprite.Sprite):
         # Checa que tenga suficientes Chons y energía para la reproducción
         if self.nchons >= CHONS_FOR_REPRODUCTION and self.ners >= REPRODUCTION_ENERGY_COST:
             self.ners -= REPRODUCTION_ENERGY_COST  # Usa la energía
+            self.nuts -= REPRODUCTION_NUTS_COST  # Usa la energía
             self.nchons -= CHONS_FOR_REPRODUCTION // 2    # Usa los chons
 
             # Modifica un poco el color para la nueva Sélula
@@ -198,7 +207,7 @@ class Sell(pygame.sprite.Sprite):
                      theta=self.theta+ math.pi/2, color=rgb)
             
             # Asigna una orientación perpendicualar a la actual
-            self._set_theta(self.theta - math.pi/2)
+            self._change_vector(self.theta - math.pi/2)
 
     
 
