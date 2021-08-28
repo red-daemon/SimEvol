@@ -47,7 +47,7 @@ class App:
 
         # Crea los Chons
         for _ in range(START_CHONS):
-            new_chon(self.chon_sprites, None, 10)
+            new_chon(self.chon_sprites, None, MERCY_TIME)
 
         # Crea los Sprites de texto
         self.chons_txt = RenderText(

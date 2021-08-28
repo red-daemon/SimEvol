@@ -8,7 +8,7 @@ from chon import *
 
 NSELLS = 0
 
-# ToDo: visión, tamanio
+# ToDo: visión, tamanio, absorber o no,
 
 class Sell(pygame.sprite.Sprite):
     def __init__(self, screen, text_sprite, id, pos=None, theta=None, color=None):
@@ -169,7 +169,7 @@ class Sell(pygame.sprite.Sprite):
         """Verifica las condiciones necesarias para poder absorber un Chon, y lo mata al hacerlo"""
         # Checa que los Chons que ha absorbido sean menos que el limite
         # Un Chon solo puede absorberse después de los primeros 10 segundos
-        if self.nchons < MAX_CHONS and chon2absorb.timer == 10: 
+        if self.nchons < MAX_CHONS and chon2absorb.timer == MERCY_TIME: 
             # Ejecuta si lo encuentra y ademas está a punto de moverse
                 chon2absorb.kill()  # Mata al Chon
                 self.nchons += 1    # Agrega 1 al contador de Chons que tiene adentro
@@ -192,7 +192,7 @@ class Sell(pygame.sprite.Sprite):
         if self.nchons > 0:
             dlt = pick_direction()    # Obten una posición aleatoria en la vecindad
             pos = [self.rect.x+dlt[0], self.rect.y+dlt[1]]
-            s = Chon(pos=pos)   # Crea un nuevo Chon en la posición obtenida 
+            s = Chon(pos=pos, theta=self.theta + math.pi)   # Crea un nuevo Chon en la posición obtenida 
             chons.add(s)
 
     def _reproduce(self, sells, texts, screen):

@@ -5,7 +5,7 @@ from pygame.locals import *
 from general_functions import *
 
 class Chon(pygame.sprite.Sprite):
-    def __init__(self, pos=None, timer = 0):
+    def __init__(self, pos=None, timer = 0, theta= None):
         """Inicializa un nuevo Chon, con una imagen prediseñada, asígnale coordenadas y orientación."""
         pygame.sprite.Sprite.__init__(self) # Inicializa el modulo interno
         self.image = pygame.image.load('chon.bmp').convert()    # Carga la imagen
@@ -18,7 +18,10 @@ class Chon(pygame.sprite.Sprite):
             self.rect = self.rect.move(pos[0],pos[1])
 
         self.real_pose = [self.rect.x, self.rect.y] # Guarda las coordenadas continuas del Chon
-        self.theta = (random.randrange(0, 360) * math.pi) / 180 # Asigna una orientación aleatoria
+        if not theta:
+            self.theta = (random.randrange(0, 360) * math.pi) / 180 # Asigna una orientación aleatoria
+        else:
+            self.theta = theta
         self.timer = timer
 
     def update(self, sells):
